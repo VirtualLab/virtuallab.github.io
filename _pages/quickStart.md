@@ -118,8 +118,8 @@ So let's start the journey now! (Click the "Next" button on the right)
     Meteor.js is a cohesive development platform, a collection of libraries and packages that are bound together in a tidy way to make web development easier. 
         
     Meteor supports OS X, Windows, and Linux, and is simple to install. 
-
-    ```html
+    
+   ~~~   
     | OS      | Version             | Status | 
     |---------|---------------------|--------|
     | Windows | 10                  |    ✔   |
@@ -130,8 +130,7 @@ So let's start the journey now! (Click the "Next" button on the right)
     |  Linux  | X86                 |    ✔   | 
     |  Linux  | x86_64              |    ✔   | 
     |   OSX   | 10.7(Lion) and above|    ✔   | 
-    ```
-
+   ~~~
     On Windows?
 
     [Download the official Meteor installer](https://install.meteor.com/windows)
@@ -147,11 +146,13 @@ So let's start the journey now! (Click the "Next" button on the right)
 
 
 1.  **Checkout the project** 
+    
     > `git clone https://github.com/VirtualLab/tutorial.git`
 
 2.  **Add TurkServer package**
     
     Under the root of your project, add the turkserver meteor package:
+    
     > `cd tutorial`
     
     > `git clone https://github.com/HarvardEconCS/turkserver-meteor.git packages/turkserver` (Please note: Using GitHub has the install source is temporary until it's published as a Meteor package)
@@ -169,7 +170,7 @@ So let's start the journey now! (Click the "Next" button on the right)
     
     The file should look like this:
     
-    ```javascript
+    ~~~ javascript
     {
       "turkserver": {
         "adminPassword": <String>, // Password you choose for the TurkServer admin deshboard
@@ -187,9 +188,10 @@ So let's start the journey now! (Click the "Next" button on the right)
         }
       }
     }
-    ```    
+    ~~~    
        
 4.  **Run your app**
+
     > `meteor --settings settings.json`
 
     In your console, you should see:
@@ -252,6 +254,7 @@ Here we are going to use [Microsoft Azure](https://azure.microsoft.com/) as exam
     For **Windows** users, you can use [Azure-demeteorizer](https://github.com/christopheranderson/azure-demeteorizer).
     Make sure you install and meet all the [prerequisites](https://github.com/christopheranderson/azure-demeteorizer#prerequisites) first, (Note: Visual Studio 2013 would be the most comaptible choice for most users.)
     then Azure-demeteorizer can do all the magic for you:
+    
     > 1. Install azure-demeteorizer globally using npm:`npm install -g christopheranderson/azure-demeteorizer`
     > 2. `cd tutorial`
     > 3. `azure-demeteorizer build`
@@ -266,6 +269,7 @@ Here we are going to use [Microsoft Azure](https://azure.microsoft.com/) as exam
      
     For **Linux/Mac OSX** users, you can use [Demeteorizer](https://github.com/OnModulus/demeteorizer), however,
     you have to demeteorize first, and do a continuous deployment with Git, TFS, GitHub, or Visual Studio Team Services (Here use Git as example):
+    
     > 1. Install Demeteorizer globally using npm`$ npm install -g demeteorizer`
     > 2. `$ cd tutorial`
     > 3. `$ demeteorizer`
@@ -304,14 +308,16 @@ Here we are going to use [Microsoft Azure](https://azure.microsoft.com/) as exam
 
 ### **Deployment Choices**
     
-```html
+
+~~~ html
 | Client OS | Server OS             | Solutions(Recommended) | Status | 
 |-----------|-----------------------|------------------------|--------|
 | Windows   | Windows               | Azure-demeteorizer     |    ✔   |
 | Windows   | Linux                 | Mupx                   |    ✔   |
 | Linux     | Windows               | Demeteorizer           |    ✔   |
 | Linux     | Linux                 | Mupx                   |    ✔   |
-```
+~~~
+
 
 *For other deployments on Modulus, DigitalOcean, Galaxy, please check the official deployment book [here](http://meteortips.com/deployment-tutorial/).
 
