@@ -36,7 +36,7 @@ For easiest integration with TurkServer, you will need to add some basic routing
 
 To do this, first add the Meteor package iron-router via `meteor add iron:router`. Then edit the block of HTML at the top of demo.html to look like this:
 
-~~~ html
+```html
 <template name="home">
     Please accept the HIT to continue.
 </template>
@@ -52,13 +52,13 @@ To do this, first add the Meteor package iron-router via `meteor add iron:router
   {% raw %}{{> hello}}{% endraw %}
   </body>
 </template>
-~~~
+```
 
 We have done two things here: we wrapped the existing HTML in a template called "experiment", and we added another template called "home." We want to show the "home" template when a worker is previewing the HIT, and the "experiment" template after they have accepted.
 
 Next create a new file called routes.js and add the following to it:
 
-~~~ javascript
+```javascript
 Router.route('/', function() {
   this.render('home');
 });
@@ -66,7 +66,7 @@ Router.route('/', function() {
 Router.route('/experiment', function() {
   this.render('experiment');
 });
-~~~
+```
 
 For a more detailed explanation of this code and  a better understanding how routing works, see the [iron-router docs](http://iron-meteor.github.io/iron-router/). Essentially, we have told the app that when we navigate to the default route `'/'`, we should see the "home" template, and when we navigate to the route `'/experiment'`, we should see the "experiment" template.
 
@@ -82,7 +82,7 @@ have those, or don't remember where to find them, go
 [here](http://docs.aws.amazon.com/AWSMechTurk/latest/AWSMechanicalTurkGettingStartedGuide/SetUp.html)).
 The file should look like this:
 
-~~~ javascript
+```javascript
 {
   "turkserver": {
     "adminPassword": "",
@@ -100,7 +100,7 @@ The file should look like this:
     }
   }
 }
-~~~
+```
 
 For now, fill in "adminPassword", "accessKeyId", and "secretAccessKey". We'll come back to the other parts later.
 
@@ -136,21 +136,21 @@ Let's assume that when a user is in the experiment, we want him to see the "Clic
 
 First, we'll create the template. Add a block at the end of demo.html that looks like this:
 
-~~~ html
+```html
 <template name="survey">
   <button>Submit the HIT</button>
 </template>
-~~~
+```
 
 To add functionality to this button, add the following block to demo.js:
 
-~~~ javascript
+```javascript
 Template.survey.events({
   'click button': function () {
     TurkServer.submitExitSurvey({});
   }
 });
-~~~
+```
 
 We have now used the TurkServer API for the first time. The function
 `submitExitSurvey()` will automatically submit a HIT to Mechanical
@@ -160,7 +160,7 @@ admin console in real time. A natural thing to do is put a form in
 your exit survey that asks the worker some follow-up questions about
 the HIT. For example, modify your template as follows:
 
-~~~ html
+```html
 <template name="survey">
   <form class="survey">
     <p>Was there anything confusing about this HIT?</p>
@@ -170,11 +170,11 @@ the HIT. For example, modify your template as follows:
     <button type="submit">Submit the HIT</button>
   </form>
 </template>
-~~~
+```
 
 And modify the events code accordingly:
 
-~~~ javascript
+```javascript
 Template.survey.events({
   'submit .survey': function (e) {
     e.preventDefault();
@@ -183,21 +183,21 @@ Template.survey.events({
     TurkServer.submitExitSurvey(results);
   }
 });
-~~~
+```
 
 Note that we changed the event from a button click to a form submission, so we need to use `e.preventDefault()` to prevent the browser from automatically handling the event.
 
 Add the following block to routes.js:
 
-~~~ javascript
+```javascript
 Router.route('/survey', function() {
   this.render('survey');
 });
-~~~
+```
 
 Finally, we need to tell our app that when a user is in the experiment state, we should load the `'/experiment'` route (which is connected to the "experiment" template), and when a user is in the exit survey state, we should load the `'/survey'` route (which is connected to the "survey" template). Add the following inside the `Meteor.isClient` block at the top of demo.js:
 
-~~~ javascript
+```javascript
 Tracker.autorun(function() {
   if (TurkServer.inExperiment()) {
     Router.go('/experiment');
@@ -205,7 +205,7 @@ Tracker.autorun(function() {
     Router.go('/survey');
   }
 });
-~~~
+```
 
 There are a few things worth noting about this code. We have made use of two boolean reactive variables provided by TurkServer: `TurkServer.inExperiment()` and `TurkServer.inExitSurvey()` (unsurprisingly, there is also `TurkServer.inLobby()`). When the state of the user changes, the value of these variables will update accordingly. The `Tracker.autorun` block will re-run whenever the variables change, which means that whenever the state of a user changes, our app will load the appropriate route, and therefore show the appropriate template.
 
@@ -215,18 +215,18 @@ There are a few things worth noting about this code. We have made use of two boo
 
 There is still one missing piece. We know that when a user accepts the HIT, he goes to the lobby, and then the SimpleAssigner puts him into an experiment. And we know that when the experiment ends, he'll go back to the lobby, and the SimpleAssigner will put him into the exit survey, where he'll be able to submit the HIT. But how do we let the user end his experiment? Let's add a button on the "Click Me" page that will allow the user to move to the exit survey when ready. Edit the "hello" template in demo.html to look like this:
 
-~~~ html
+```html
 <template name="hello">
   <button id="clickMe">Click Me</button>
   <p>You've pressed the button {{counter}} times.</p>
 
   <button id="exitSurvey">I'm Done</button>
 </template>
-~~~
+```
 
 Note that we added an id attribute to both buttons so that we can distinguish between them in the events code. Now edit the `Template.hello.events` block in demo.js as follows:
 
-~~~ javascript
+```javascript
 Template.hello.events({
   'click button#clickMe': function () {
     // increment the counter when button is clicked
@@ -237,18 +237,18 @@ Template.hello.events({
      Meteor.call('goToExitSurvey');
   }
 });
-~~~
+```
 
 And define the new method `goToExitSurvey()` within the `Meteor.isServer` block (but outside of the `Meteor.startup()` block) at the bottom of demo.js:
 
-~~~ javascript
+```javascript
 Meteor.methods({
   goToExitSurvey: function() {
     var exp = TurkServer.Instance.currentInstance();
     exp.teardown();
   }
 });
-~~~
+```
 
 In our new method `goToExitSurvey()`, we first grab the JavaScript object corresponding to the user's current experiment. (TurkServer uses the terms "instance" and "experiment" interchangeably; I will try to stick to "experiment.) Then we call the `teardown()` method of this object, which ends the experiment. So this point the user goes back to the lobby, and then the SimpleAssigner sends him to the exit survey, so he can submit the HIT.
 
@@ -260,10 +260,10 @@ We can create a batch via the admin interface. Go back to `http://localhost:3000
 
 To add the SimpleAssigner to your new "main" batch, add the following code within the `Meteor.startup` block of the `Meteor.isServer` block at the bottom of demo.js:
 
-~~~ javascript
+```javascript
 var batch = TurkServer.Batch.getBatchByName("main");
 batch.setAssigner(new TurkServer.Assigners.SimpleAssigner);
-~~~
+```
 
 A few more TurkServer API calls here. First we grab the JavaScript object corresponding to the batch that we created. Then we call its method `setAssigner()` to tell our app that all HITs in this batch should use the SimpleAssigner.
 
@@ -363,30 +363,30 @@ So this experiment was pretty uninteresting; we didn't even record any data. Let
 
 Let's create a new Mongo collection for this purpose. Create a new file models.js and add the following:
 
-~~~ javascript
+```javascript
 Clicks = new Mongo.Collection('clicks');
 TurkServer.partitionCollection(Clicks);
-~~~
+```
 
 You should be familiar with the first line of code. The second is a bit more mysterious, but bear with me for now.
 
 Now go to demo.js, and within the `Meteor.isClient` block, add the following:
 
-~~~ javascript
+```javascript
 Tracker.autorun(function() {
   var group = TurkServer.group();
   if (group == null) return;
   Meteor.subscribe('clicks', group);
 });
-~~~
+```
 
 Next, within `Meteor.isServer` block, add:
 
-~~~ javascript
+```javascript
 Meteor.publish('clicks', function() {
   return Clicks.find();
 });
-~~~
+```
 
 It's not crucial to understand all of what's happening here, but the
 general idea is important. A key concept to Turkserver's functionality
@@ -429,12 +429,12 @@ protocol, take a look at the
 
 Now we are finally ready to use our new partitioned collection. Instead of storing the number of clicks on Meteor's `Session` object, we'll store it on our new Clicks collection. To make this work, we'll need to add a new document to this collection whenever a user enters an experiment, and initialize the "count" field of this document to 0. TurkServer makes it easy to take certain actions upon the start of an experiment -- use the `TurkServer.initialize` function, which takes as input another function that will be run upon every experiment initialization. Add the following within the `Meteor.isServer` block:
 
-~~~ javascript
+```javascript
 TurkServer.initialize(function() {
   var clickObj = {count: 0};
   Clicks.insert(clickObj);
 });
-~~~
+```
 
 We don't need to add any other fields to the Click document besides
 `count`. This is because Clicks is partitioned, so whenever we add a
@@ -450,7 +450,7 @@ later and it will be clearer then.
 
 Now go to demo.js and edit the `Template.hello.helpers` and `Template.hello.events` blocks as follows:
 
-~~~ javascript
+```javascript
 Template.hello.helpers({
   counter: function () {
     // get our Click document
@@ -466,19 +466,19 @@ Template.hello.events({
     Meteor.call('incClicks');
   }
 });
-~~~
+```
 
 Note the use of `Clicks.findOne()` -- because Clicks is partitioned, even if other users have inserted their own Click documents in other experiments, we only have access to our own click document, so we can treat the Clicks collection as if it only contains one document.
 
 Finally, define the `incClicks` method in your server-side `Meteor.methods` block:
 
-~~~ javascript
+```javascript
 Meteor.methods({
   incClicks: function() {
     Clicks.update({}, {$inc: {clicks: 1}});
   },
 });
-~~~
+```
 
 Again, because Clicks is partitioned, we don't have to specify which document to update -- the code automatically knows to update the document corresponding to our experiment.
 
@@ -502,13 +502,13 @@ Let's grab the id of the most recent experiment. So either click on the right-mo
 
 So this is well and good, but we still haven't dealt with bonusing the user according to how many times he clicked the button. Let's edit our `incClicks` method so that whenever we increment the counter, we also add some money to the user's bonus:
 
-~~~ javascript
+```javascript
 incClicks: function() {
   Clicks.update({}, {$inc: {count: 1}});
   var asst = TurkServer.Assignment.currentAssignment();
   asst.addPayment(0.1);
 },
-~~~
+```
 
 First this code grabs the JavaScript object corresponding to the user's current assignment. Recall that we have an assignment object for every <user, HIT> pair, so this is the natural place to store a bonus. Then we call the method `addPayment()` to increment the bonus by a fixed amount (in this case, 10 cents).
 
@@ -570,6 +570,7 @@ At this point we're all set to create our HIT. Click on "HITs" in the navigation
 The MTurk Sandbox allows you to test and debug your app without spending real
  money. See the [deployment instructions](quickstart) for how to post a HIT 
  and pay your workers.    
+
 
 
 
